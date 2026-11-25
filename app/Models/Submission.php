@@ -10,11 +10,12 @@ class Submission extends Model
 {
     use HasFactory;
 
-    // TODO 2: Tambahkan 'nilai' dan 'catatan_dosen' ke $fillable, serta lengkapi logika status nilai ('Belum Dinilai', 'Lulus' >= 70, 'Perlu Perbaikan')
     protected $fillable = [
         'assignment_id',
         'user_id',
         'jawaban',
+        'nilai',
+        'catatan_dosen',
         'submitted_at',
     ];
 
@@ -35,7 +36,10 @@ class Submission extends Model
 
     public function getStatusNilaiAttribute(): string
     {
-        // TODO 2: Lengkapi logika status nilai ('Belum Dinilai' jika null, 'Lulus' jika >= 70, selain itu 'Perlu Perbaikan')
-        return '';
+        if ($this->nilai === null) {
+            return 'Belum Dinilai';
+        }
+
+        return $this->nilai >= 70 ? 'Lulus' : 'Perlu Perbaikan';
     }
 }

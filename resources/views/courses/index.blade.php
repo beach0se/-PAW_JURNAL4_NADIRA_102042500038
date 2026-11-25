@@ -37,12 +37,26 @@
                 >
             </div>
             
-            {{-- TODO 6: Tambahkan dropdown filter Semester dan dropdown Urutkan (Sort) di sini --}}
+            <select name="semester" class="form-control" style="width: auto; min-width: 180px;">
+                <option value="">Semua Semester</option>
+                @foreach($semesters as $semester)
+                    <option value="{{ $semester }}" @selected(request('semester') === $semester)>
+                        {{ $semester }}
+                    </option>
+                @endforeach
+            </select>
+
+            <select name="sort" class="form-control" style="width: auto; min-width: 180px;">
+                <option value="nama_asc" @selected(request('sort', 'nama_asc') === 'nama_asc')>Nama (A-Z)</option>
+                <option value="nama_desc" @selected(request('sort') === 'nama_desc')>Nama (Z-A)</option>
+                <option value="sks_desc" @selected(request('sort') === 'sks_desc')>SKS (Tertinggi)</option>
+                <option value="sks_asc" @selected(request('sort') === 'sks_asc')>SKS (Terendah)</option>
+            </select>
             
             <button type="submit" class="btn btn-secondary">
                 Filter &amp; Cari
             </button>
-            @if(request('search'))
+            @if(request('search') || request('semester') || request('sort'))
                 <a href="{{ route('courses.index') }}" class="btn btn-secondary" style="color: var(--slate-500);">
                     Reset
                 </a>

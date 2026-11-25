@@ -62,6 +62,90 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // TODO 8: Tambahkan minimal 2 mata kuliah lagi dengan semester berbeda, 1 mahasiswa tambahan, 2 tugas, dan contoh data submission
+        $mahasiswa2 = User::updateOrCreate(
+            ['email' => 'mahasiswa2@celoe.test'],
+            [
+                'name' => 'Siti Nurhaliza',
+                'password' => Hash::make('mahasiswa123'),
+                'role' => 'mahasiswa',
+                'nomor_induk' => '1301210002',
+            ]
+        );
+
+        $course2 = MataKuliah::updateOrCreate(
+            ['kode_mk' => 'IF302'],
+            [
+                'nama_mk' => 'Basis Data',
+                'deskripsi' => 'Perancangan basis data relasional, normalisasi, SQL, indeks, dan transaksi.',
+                'sks' => 3,
+                'semester' => 'Genap 2026/2027',
+                'dosen_id' => $dosen->id,
+            ]
+        );
+
+        $course3 = MataKuliah::updateOrCreate(
+            ['kode_mk' => 'IF303'],
+            [
+                'nama_mk' => 'Kecerdasan Buatan',
+                'deskripsi' => 'Konsep pencarian, representasi pengetahuan, pembelajaran mesin, dan penerapan AI.',
+                'sks' => 3,
+                'semester' => 'Ganjil 2027/2028',
+                'dosen_id' => $dosen->id,
+            ]
+        );
+
+        $course2->students()->syncWithoutDetaching([
+            $mahasiswa1->id => ['status' => 'approved'],
+            $mahasiswa2->id => ['status' => 'approved'],
+        ]);
+        $course3->students()->syncWithoutDetaching([
+            $mahasiswa2->id => ['status' => 'approved'],
+        ]);
+
+        $assignment2 = Assignment::updateOrCreate(
+            ['course_id' => $course2->id, 'judul' => 'Perancangan Skema Basis Data'],
+            [
+                'deskripsi' => 'Buat skema basis data beserta normalisasi dan kueri SQL untuk studi kasus yang diberikan.',
+                'deadline' => now()->addDays(14),
+            ]
+        );
+
+        $assignment3 = Assignment::updateOrCreate(
+            ['course_id' => $course3->id, 'judul' => 'Implementasi Algoritma Pencarian'],
+            [
+                'deskripsi' => 'Implementasikan algoritma pencarian dan jelaskan proses penelusuran serta hasilnya.',
+                'deadline' => now()->addDays(21),
+            ]
+        );
+
+        Submission::updateOrCreate(
+            ['assignment_id' => $assignment2->id, 'user_id' => $mahasiswa1->id],
+            [
+                'jawaban' => 'Saya telah merancang skema relasional, menentukan primary key dan foreign key, serta menormalisasi tabel sampai bentuk normal ketiga.',
+                'nilai' => 85,
+                'catatan_dosen' => 'Skema dan normalisasi sudah baik. Lengkapi penjelasan mengenai indeks.',
+                'submitted_at' => now()->subDays(2),
+            ]
+        );
+
+        Submission::updateOrCreate(
+            ['assignment_id' => $assignment2->id, 'user_id' => $mahasiswa2->id],
+            [
+                'jawaban' => 'Jawaban berisi perancangan tabel mahasiswa, mata kuliah, dan enrollments beserta kueri SQL dasar.',
+                'nilai' => null,
+                'catatan_dosen' => null,
+                'submitted_at' => now()->subDay(),
+            ]
+        );
+
+        Submission::updateOrCreate(
+            ['assignment_id' => $assignment3->id, 'user_id' => $mahasiswa2->id],
+            [
+                'jawaban' => 'Implementasi mencakup algoritma pencarian BFS dan DFS beserta analisis kompleksitas waktu dan ruang.',
+                'nilai' => 92,
+                'catatan_dosen' => 'Analisis sudah lengkap dan implementasi mudah dipahami.',
+                'submitted_at' => now()->subHours(5),
+            ]
+        );
     }
 }
